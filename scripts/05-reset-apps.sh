@@ -76,7 +76,7 @@ cleanup_helm_releases() {
   while IFS= read -r release; do
     [[ -n "${release}" ]] || continue
     log "Uninstalling Helm release: ${release}"
-    helm uninstall "${release}" -n "${namespace}" >/dev/null 2>&1 || true
+    helm uninstall "${release}" -n "${namespace}" --wait >/dev/null 2>&1 || true
   done <<< "${releases}"
 }
 
@@ -91,7 +91,7 @@ cleanup_namespace() {
     --all -n "${namespace}" --ignore-not-found=true >/dev/null 2>&1 || true
   kubectl delete ingressroutes,ingressroutetcps,ingressrouteudps,middlewares,middlewaretcps,traefikservices,serverstransports,serverstransporttcps,tlsoptions,tlsstores \
     --all -n "${namespace}" --ignore-not-found=true >/dev/null 2>&1 || true
-  kubectl delete issuers,certificaterequests \
+  kubectl delete certificates,issuers,certificaterequests \
     --all -n "${namespace}" --ignore-not-found=true >/dev/null 2>&1 || true
   kubectl delete scaledobjects,triggerauthentications,scaledjobs \
     --all -n "${namespace}" --ignore-not-found=true >/dev/null 2>&1 || true
@@ -108,11 +108,10 @@ cleanup_namespace() {
   if kubectl get namespace "${namespace}" >/dev/null 2>&1; then
     local ns_status
     ns_status=$(kubectl get namespace "${namespace}" -o jsonpath='{.status.phase}' 2>/dev/null || echo "unknown")
-    if [[ "${ns_status}" == "Terminating" ]] && kubectl get deployment metrics-server -n kube-system >/dev/null 2>&1; then
-      warn "Namespace ${namespace} is stuck in Terminating; restarting metrics-server to refresh discovery"
-      kubectl -n kube-system rollout restart deployment metrics-server >/dev/null 2>&1 || true
-      sleep 10
-      kubectl delete namespace "${namespace}" --ignore-not-found=true >/dev/null 2>&1 || true
+    if [[ "${ns_status}" == "Terminating" ]]; then
+      warn "Namespace ${namespace} is stuck in Terminating; patching out finalizers"
+      kubectl patch namespace "${namespace}" \
+        -p '{"spec":{"finalizers":[]}}' --type=merge >/dev/null 2>&1 || true
       elapsed=0
       while kubectl get namespace "${namespace}" >/dev/null 2>&1 && [[ ${elapsed} -lt 30 ]]; do
         sleep 1
@@ -147,7 +146,7 @@ for release_info in "${HELM_RELEASES[@]}"; do
   release_namespace="${release_info##*:}"
   if helm status "${release_name}" -n "${release_namespace}" >/dev/null 2>&1; then
     log "Uninstalling: ${release_name} from ${release_namespace}"
-    helm uninstall "${release_name}" -n "${release_namespace}" >/dev/null 2>&1 || true
+    helm uninstall "${release_name}" -n "${release_namespace}" --wait >/dev/null 2>&1 || true
   fi
  done
 

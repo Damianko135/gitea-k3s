@@ -140,6 +140,6 @@ gitea:
 
     picture:
       DISABLE_GRAVATAR: "false"
-      
+
     webhook:
       ALLOWED_HOST_LIST: "*.svc.cluster.local"
