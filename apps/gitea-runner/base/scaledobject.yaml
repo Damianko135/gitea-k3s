@@ -19,7 +19,7 @@ spec:
   triggers:
     - type: github-runner
       metadata:
-        githubApiURL: https://git.open-ict.hu/api/v1
+        githubApiURL: https://git.example.com/api/v1
         runnerScope: global
         labels: ubuntu-latest,ubuntu-24.04,ubuntu-22.04
         noDefaultLabels: "true"

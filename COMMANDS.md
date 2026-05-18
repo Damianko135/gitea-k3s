@@ -243,12 +243,12 @@ kubectl apply -k platform/system/
 
 ```bash
 # Copy kubeconfig to your local machine (replace <MASTER_IP> with any master's IP):
-scp root@<MASTER_IP>:/etc/rancher/k3s/k3s.yaml ~/.kube/oict-config
+scp root@<MASTER_IP>:/etc/rancher/k3s/k3s.yaml ~/.kube/k3s-config
 
 # Update the server address to the VIP
-sed -i 's|https://127.0.0.1:6443|https://172.16.69.50:6443|' ~/.kube/oict-config
+sed -i 's|https://127.0.0.1:6443|https://172.16.69.50:6443|' ~/.kube/k3s-config
 
-export KUBECONFIG=~/.kube/oict-config
+export KUBECONFIG=~/.kube/k3s-config
 kubectl get nodes
 ```
 

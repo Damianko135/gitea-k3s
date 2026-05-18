@@ -9,4 +9,4 @@ spec:
       hostAliases:
         - ip: 172.16.69.60
           hostnames:
-            - git.open-ict.hu
+            - git.example.com

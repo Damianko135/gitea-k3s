@@ -99,7 +99,7 @@ else
   echo ""
   read -rp "  Configure Gitea OIDC login (Authentik)? [y/N]: " OIDC_ANSWER
   if [[ "${OIDC_ANSWER,,}" == "y" ]]; then
-    echo "  Discovery URL format: https://auth.open-ict.hu/application/o/<slug>/.well-known/openid-configuration"
+    echo "  Discovery URL format: https://auth.example.com/application/o/<slug>/.well-known/openid-configuration"
     echo ""
     read -rp "  OIDC Client ID:     " OIDC_KEY
     read -rsp "  OIDC Client Secret: " OIDC_SECRET

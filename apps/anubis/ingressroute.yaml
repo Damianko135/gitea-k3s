@@ -13,7 +13,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`git.open-ict.hu`)
+      match: Host(`git.example.com`)
       services:
         - name: anubis
           port: 8080
@@ -35,7 +35,7 @@ spec:
     - web
   routes:
     - kind: Rule
-      match: Host(`git.open-ict.hu`)
+      match: Host(`git.example.com`)
       middlewares:
         - name: https-redirect
       services:

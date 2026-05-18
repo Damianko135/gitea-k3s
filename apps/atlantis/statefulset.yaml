@@ -51,9 +51,9 @@ spec:
               set -e
               cfg=/tmp/gitconfig-dir/gitconfig
               printf '[url "http://%s:%s@gitea-http.gitea.svc.cluster.local:3000/"]\n' "$ATLANTIS_GITEA_USER" "$ATLANTIS_GITEA_TOKEN" > "$cfg"
-              printf '    insteadOf = https://git.open-ict.hu/\n' >> "$cfg"
-              printf '    insteadOf = https://%s@git.open-ict.hu/\n' "$ATLANTIS_GITEA_USER" >> "$cfg"
-              printf '    insteadOf = https://%s:%s@git.open-ict.hu/\n' "$ATLANTIS_GITEA_USER" "$ATLANTIS_GITEA_TOKEN" >> "$cfg"
+              printf '    insteadOf = https://git.example.com/\n' >> "$cfg"
+              printf '    insteadOf = https://%s@git.example.com/\n' "$ATLANTIS_GITEA_USER" >> "$cfg"
+              printf '    insteadOf = https://%s:%s@git.example.com/\n' "$ATLANTIS_GITEA_USER" "$ATLANTIS_GITEA_TOKEN" >> "$cfg"
 
       containers:
         - name: atlantis
@@ -69,9 +69,9 @@ spec:
             - { name: ATLANTIS_PORT, value: "4141" }
             - {
                 name: ATLANTIS_ATLANTIS_URL,
-                value: "https://atlantis.git.open-ict.hu",
+                value: "https://atlantis.git.example.com",
               }
-            - { name: ATLANTIS_REPO_ALLOWLIST, value: "git.open-ict.hu/*" }
+            - { name: ATLANTIS_REPO_ALLOWLIST, value: "git.example.com/*" }
             - {
                 name: ATLANTIS_GITEA_BASE_URL,
                 value: "http://gitea-http.gitea.svc.cluster.local:3000",

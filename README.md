@@ -1,4 +1,4 @@
-# Open ICT — Self-Hosted GitOps Platform
+# Gitea on K3s — Self-Hosted GitOps Platform
 
 > A production-ready, fully self-hosted Git service and CI/CD platform built on a 6-node K3s cluster.
 > Infrastructure-as-code all the way down — every component declared, versioned, and reproducible.
@@ -66,7 +66,7 @@ Everything is managed through **Kustomize** with **Helm** used solely for the Gi
                                      │  HTTP(S)          │ TCP/SSH
                           ┌──────────▼──────┐   ┌───────▼──────────┐
                           │  IngressRoute   │   │ IngressRouteTCP  │
-                          │  git.open-ict.hu│   │  port 2222       │
+                          │  git.example.com│   │  port 2222       │
                           └──────────┬──────┘   └───────┬──────────┘
                                      │                   │
                           ┌──────────▼───────────────────▼──────────┐
@@ -123,7 +123,7 @@ The three control-plane nodes provide **etcd quorum** — the cluster tolerates 
 
 Both VIPs are announced via **ARP** (Layer 2), which works well on a flat LAN (e.g. Proxmox virtual network). Upstream routing is not required.
 
-Pod-to-pod DNS resolution for `git.open-ict.hu` is solved with **hostAliases** injected directly into cert-manager and KEDA operator pods, pointing the hostname at the MetalLB VIP. This avoids a dependency on split-horizon DNS while keeping the Let's Encrypt HTTP-01 challenge and the KEDA runner-queue API working from inside the cluster.
+Pod-to-pod DNS resolution for `git.example.com` can be solved with **hostAliases** injected directly into cert-manager and KEDA operator pods, pointing the hostname at the MetalLB VIP. This avoids a dependency on split-horizon DNS while keeping the Let's Encrypt HTTP-01 challenge and the KEDA runner-queue API working from inside the cluster.
 
 ---
 
@@ -189,7 +189,7 @@ Mixing the two responsibilities into one tool would make troubleshooting harder 
 
 Gitea supports Git-over-SSH. Rather than exposing an additional LoadBalancer service (which would consume a second IP from the MetalLB pool), SSH traffic is routed through Traefik via a dedicated **TCP entrypoint on port 2222**.
 
-The `IngressRouteTCP` resource in `apps/gitea/ingressroute-tcp.yaml` matches all traffic on that entrypoint using `HostSNI('*')` (TCP passthrough — no TLS inspection) and forwards it to the Gitea SSH service. From the user's perspective, their Git remote is simply `ssh://git.open-ict.hu:2222`.
+        The `IngressRouteTCP` resource in `apps/gitea/ingressroute-tcp.yaml` matches all traffic on that entrypoint using `HostSNI('*')` (TCP passthrough — no TLS inspection) and forwards it to the Gitea SSH service. From the user's perspective, their Git remote is simply `ssh://git.example.com:2222`.
 
 This keeps the entire platform reachable through a single IP address.
 
@@ -320,8 +320,7 @@ Supported job labels: `ubuntu-latest`, `ubuntu-24.04`, `ubuntu-22.04`
 ### Prerequisites
 
 - 6 Linux nodes reachable over SSH
-- IP range `172.16.69.50–172.16.69.60` available on the LAN
-- DNS record: `git.open-ict.hu` → `172.16.69.60`
+- IP range `172.16.69.50–172.16.69.60` available on the LAN - DNS record: `git.example.com` → `172.16.69.60`
 - Internet access for pulling images and Let's Encrypt challenges
 
 ### Bootstrap order
@@ -482,4 +481,4 @@ All scripts are idempotent and safe to re-run. Secrets are generated at deploy t
 
 ---
 
-_Maintained by the Open ICT platform team — platform-ops@open-ict.hu_
+_Maintained by the platform team — platform-ops@example.com_
